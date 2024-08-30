@@ -1,2 +1,6 @@
-# services
-Shared js сервисы
+# @astral/services
+
+Shared js-сервисы.
+
+## FeatureToggle
+
