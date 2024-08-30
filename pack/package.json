@@ -1,0 +1,18 @@
+{
+  "name": "@astral/pack",
+  "version": "1.0.0",
+  "private": true,
+  "main": "./src/index.js",
+  "scripts": {
+    "lint": "eslint ./ --fix --quiet",
+    "lint:all": "eslint \"**/*.js\" --fix --quiet",
+    "tests": "vitest run"
+  },
+  "dependencies": {
+    "recursive-copy": "^2.0.10",
+    "shelljs": "^0.8.4"
+  },
+  "devDependencies": {
+    "@astral/eslint-config-node": "^2.4.0"
+  }
+}
