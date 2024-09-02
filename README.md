@@ -4,9 +4,9 @@ Shared js-сервисы.
 
 ----
 
-## UserAgentService
+## UserAgentDetector
 
-UserAgentService — сервис парсинга строки User-Agent браузера для получения информацию о
+UserAgentDetector — сервис парсинга строки User-Agent браузера для получения информацию о
 текущей ОС, браузере и версии браузера пользователя.
 
 #### Использование
@@ -15,29 +15,29 @@ UserAgentService — сервис парсинга строки User-Agent бр�
 import { 
   Browser, 
   OperatingSystem, 
-  type UserAgentService,
-  userAgentService as userAgentServiceInstance, 
+  type UserAgentDetector,
+  userAgentDetector as userAgentDetectorInstance, 
 } from '@astral/services';
 
 export class UIStore {
-  constructor(private readonly userAgentService: UserAgentService) {
+  constructor(private readonly userAgentDetector: UserAgentDetector) {
     makeAutoObservable(this, {}, { autoBind: true });
   }
 
   public get isOsSupported() {
-    return this.userAgentService.os === OperatingSystem.Windows;
+    return this.userAgentDetector.os === OperatingSystem.Windows;
   }
 
   public get browserName() {
-    return this.userAgentService.browser; // Browser.Chrome === 'Chrome'
+    return this.userAgentDetector.browser; // Browser.Chrome === 'Chrome'
   }
 
   public get browserVersion() {
-    return this.userAgentService.browserVersion; // 91.0.4472.124
+    return this.userAgentDetector.browserVersion; // 91.0.4472.124
   }
 }
 
-export const createUIStore = () => new UIStore(userAgentServiceInstance);
+export const createUIStore = () => new UIStore(userAgentDetectorInstance);
 ```
 
 #### Перечисления

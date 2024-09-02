@@ -6,9 +6,9 @@ import { Browser, OperatingSystem } from './enums';
  * Сервис для парсинга UserAgent пользователя
  * @property {OperatingSystem} os операционная система.
  * @property {Browser} browser браузер.
- * @property {string} browserVersion версия браузера.
+ * @property {string | undefined} browserVersion версия браузера.
  */
-export class UserAgentService {
+export class UserAgentDetector {
   public os: OperatingSystem;
 
   public browser: Browser;
@@ -191,6 +191,6 @@ export class UserAgentService {
   }
 }
 
-export const userAgentService = new UserAgentService(
+export const userAgentDetector = new UserAgentDetector(
   typeof window !== 'undefined' ? window?.navigator.userAgent : '',
 );

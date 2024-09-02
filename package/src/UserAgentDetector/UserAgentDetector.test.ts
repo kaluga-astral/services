@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
 
 import { Browser, OperatingSystem } from './enums';
-import { UserAgentService } from './UserAgentService';
+import { UserAgentDetector } from './UserAgentDetector';
 
-describe('UserAgentService', () => {
+describe('UserAgentDetector', () => {
   describe('Определение ОС', () => {
     it.each<string>([
       'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_5_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36',
@@ -11,7 +11,7 @@ describe('UserAgentService', () => {
       'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:65.0) Gecko/20100101 Firefox/65.0',
       'Mozilla/4.0 (compatible; MSIE 5.23; Mac_PowerPC) Opera 7.54 [en]',
     ])('Срабатывает верно для MacOS, userAgent="%s"', (userAgent) => {
-      const sut = new UserAgentService(userAgent);
+      const sut = new UserAgentDetector(userAgent);
 
       expect(sut.os).toEqual(OperatingSystem.MacOS);
     });
@@ -23,7 +23,7 @@ describe('UserAgentService', () => {
       'Mozilla/5.0 (Windows NT 6.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3772.100 Safari/537.36',
       'Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; tb-gmx/2.6.9; rv:11.0) like Gecko',
     ])('Срабатывает верно для Windows, userAgent="%s"', (userAgent) => {
-      const sut = new UserAgentService(userAgent);
+      const sut = new UserAgentDetector(userAgent);
 
       expect(sut.os).toEqual(OperatingSystem.Windows);
     });
@@ -33,7 +33,7 @@ describe('UserAgentService', () => {
       'Mozilla/5.0 (iPad; U; CPU OS 4_3_2 like Mac OS X; en-us) AppleWebKit/533.17.9 (KHTML, like Gecko) Version/5.0.2 Mobile/8H7 Safari',
       'Mozilla/5.0 (iPhone; CPU iPhone OS 14_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) GSA/170.0.367390950 Mobile/15E148 Safari/604.1',
     ])('Срабатывает верно для iOS, userAgent="%s"', (userAgent) => {
-      const sut = new UserAgentService(userAgent);
+      const sut = new UserAgentDetector(userAgent);
 
       expect(sut.os).toEqual(OperatingSystem.iOS);
     });
@@ -64,7 +64,7 @@ describe('UserAgentService', () => {
       // FreeBSD
       'Mozilla/5.0 (X11; FreeBSD amd64; rv:95.0) Gecko/20100101 Firefox/95.0',
     ])('Срабатывает верно для Linux и Unix, userAgent="%s"', (userAgent) => {
-      const sut = new UserAgentService(userAgent);
+      const sut = new UserAgentDetector(userAgent);
 
       expect(sut.os).toEqual(OperatingSystem.Unix);
     });
@@ -75,13 +75,13 @@ describe('UserAgentService', () => {
       'Mozilla/5.0 (Linux; Android 11; Pixel 4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.28 Mobile Safari/537.36',
       'Mozilla/5.0 (Linux; Android 10; SM-N960F) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/14.0 Chrome/90.0.4430.210 Mobile Safari/537.36',
     ])('Срабатывает верно для Android, userAgent="%s"', (userAgent) => {
-      const sut = new UserAgentService(userAgent);
+      const sut = new UserAgentDetector(userAgent);
 
       expect(sut.os).toEqual(OperatingSystem.Android);
     });
 
     it('Возвращает Unknown при пустой строке userAgent', () => {
-      const sut = new UserAgentService('');
+      const sut = new UserAgentDetector('');
 
       expect(sut.os).toEqual(OperatingSystem.Unknown);
     });
@@ -93,7 +93,7 @@ describe('UserAgentService', () => {
       'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36',
       'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36',
     ])('Срабатывает верно для Chrome, userAgent="%s"', (userAgent) => {
-      const sut = new UserAgentService(userAgent);
+      const sut = new UserAgentDetector(userAgent);
 
       expect(sut.browser).toEqual(Browser.Chrome);
     });
@@ -103,7 +103,7 @@ describe('UserAgentService', () => {
       'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:85.0) Gecko/20100101 Firefox/85.0',
       'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:84.0) Gecko/20100101 Firefox/84.0',
     ])('Срабатывает верно для Firefox, userAgent="%s"', (userAgent) => {
-      const sut = new UserAgentService(userAgent);
+      const sut = new UserAgentDetector(userAgent);
 
       expect(sut.browser).toEqual(Browser.Firefox);
     });
@@ -113,7 +113,7 @@ describe('UserAgentService', () => {
       'Mozilla/5.0 (Windows; U; Windows NT 6.1; ko-KR) AppleWebKit/533.20.25 (KHTML, like Gecko) Version/5.0.4 Safari/533.20.27',
       'Mozilla/5.0 (X11; U; Linux x86_64; en-ca) AppleWebKit/531.2+ (KHTML, like Gecko) Version/5.0 Safari/531.2+',
     ])('Срабатывает верно для Safari, userAgent="%s"', (userAgent) => {
-      const sut = new UserAgentService(userAgent);
+      const sut = new UserAgentDetector(userAgent);
 
       expect(sut.browser).toEqual(Browser.Safari);
     });
@@ -123,7 +123,7 @@ describe('UserAgentService', () => {
       'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36 Edg/89.0.774.63',
       'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.190 Safari/537.36 Edg/88.0.705.81',
     ])('Срабатывает верно для Edge, userAgent="%s"', (userAgent) => {
-      const sut = new UserAgentService(userAgent);
+      const sut = new UserAgentDetector(userAgent);
 
       expect(sut.browser).toEqual(Browser.Edge);
     });
@@ -133,7 +133,7 @@ describe('UserAgentService', () => {
       'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36 OPR/76.0.4017.177',
       'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36 OPR/75.0.3969.218',
     ])('Срабатывает верно для Opera, userAgent="%s"', (userAgent) => {
-      const sut = new UserAgentService(userAgent);
+      const sut = new UserAgentDetector(userAgent);
 
       expect(sut.browser).toEqual(Browser.Opera);
     });
@@ -143,7 +143,7 @@ describe('UserAgentService', () => {
       'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 YaBrowser/21.5.1.274 Yowser/2.5 Safari/537.36',
       'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 YaBrowser/21.3.3.274 Yowser/2.5 Safari/537.36',
     ])('Срабатывает верно для Yandex Browser, userAgent="%s"', (userAgent) => {
-      const sut = new UserAgentService(userAgent);
+      const sut = new UserAgentDetector(userAgent);
 
       expect(sut.browser).toEqual(Browser.Yandex);
     });
@@ -155,14 +155,14 @@ describe('UserAgentService', () => {
     ])(
       'Срабатывает верно для Internet Explorer, userAgent="%s"',
       (userAgent) => {
-        const sut = new UserAgentService(userAgent);
+        const sut = new UserAgentDetector(userAgent);
 
         expect(sut.browser).toEqual(Browser.IE);
       },
     );
 
     it('Возвращает Unknown при пустой строке userAgent', () => {
-      const sut = new UserAgentService('');
+      const sut = new UserAgentDetector('');
 
       expect(sut.browser).toEqual(Browser.Unknown);
     });
@@ -208,7 +208,7 @@ describe('UserAgentService', () => {
     ])(
       'Срабатывает верно для браузера %s, userAgent="%s"',
       (expectedBrowser, userAgent, expectedVersion) => {
-        const sut = new UserAgentService(userAgent);
+        const sut = new UserAgentDetector(userAgent);
 
         expect(sut.browser).toEqual(expectedBrowser);
         expect(sut.browserVersion).toEqual(expectedVersion);
@@ -216,7 +216,7 @@ describe('UserAgentService', () => {
     );
 
     it('Возвращает undefined при пустой строке userAgent', () => {
-      const sut = new UserAgentService('');
+      const sut = new UserAgentDetector('');
 
       expect(sut.browserVersion).toBeUndefined();
     });
