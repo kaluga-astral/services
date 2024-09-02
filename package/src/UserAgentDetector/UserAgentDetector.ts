@@ -189,12 +189,18 @@ export class UserAgentDetector {
     };
   }
 
-  /** Функция переопределения ОС */
+  /**
+   * Функция переопределения ОС.
+   * Позволяет подменить ОС для ручного тестирования.
+   * */
   public _setOs(newOS: OperatingSystem) {
     this.os = newOS;
   }
 
-  /** Функция переопределения Браузера */
+  /**
+   * Функция переопределения Браузера.
+   * Позволяет подменить Браузер для ручного тестирования.
+   */
   public _setBrowser(newBrowser: Browser) {
     this.browser = newBrowser;
   }
