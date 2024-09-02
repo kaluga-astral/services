@@ -12,5 +12,10 @@
     "lint": "eslint --fix --quiet",
     "lint:all": "eslint \"**/*.{ts,tsx}\" --fix --quiet"
   },
-  "dependencies": {}
+  "dependencies": {
+    "ua-parser-js": "1.0.38"
+  },
+  "devDependencies": {
+    "@types/ua-parser-js": "^0.7.39"
+  }
 }
