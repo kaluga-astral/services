@@ -207,7 +207,7 @@ export class UserAgentDetector {
 }
 
 /**
- * Инстанс сервиса для парсинга UserAgent пользователя
+ * Сервис для парсинга UserAgent пользователя
  * @property {OperatingSystem} os операционная система.
  * @property {Browser} browser браузер.
  * @property {string | undefined} browserVersion версия браузера.
