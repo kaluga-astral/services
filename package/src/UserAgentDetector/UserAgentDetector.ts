@@ -9,10 +9,19 @@ import { Browser, OperatingSystem } from './enums';
  * @property {string | undefined} browserVersion версия браузера.
  */
 export class UserAgentDetector {
+  /**
+   * Операционная система пользователя.
+   * OperatingSystem.Unix включает в себя Linux, CentOS, Debian, Mint, RedHat, Ubuntu, SUSE, Unix, Solaris, AIX, FreeBSD
+   * */
   public os: OperatingSystem;
 
+  /** Браузер пользователя. */
   public browser: Browser;
 
+  /**
+   * Версия браузера пользователя cтрокой.
+   * Если браузер неизвестный (Browser.Unknown), то версия равна undefined.
+   * */
   public browserVersion: string | undefined;
 
   private parser: UAParserInstance;
@@ -191,6 +200,12 @@ export class UserAgentDetector {
   }
 }
 
+/**
+ * Инстанс сервиса для парсинга UserAgent пользователя
+ * @property {OperatingSystem} os операционная система.
+ * @property {Browser} browser браузер.
+ * @property {string | undefined} browserVersion версия браузера.
+ */
 export const userAgentDetector = new UserAgentDetector(
   typeof window !== 'undefined' ? window?.navigator.userAgent : '',
 );
