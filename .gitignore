@@ -2,7 +2,6 @@ dist
 lib
 node_modules
 storybook-static
-.vscode
 
 /.idea/*
 yarn-error.log

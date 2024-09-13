@@ -1,3 +1,3 @@
-export * from './FeatureFlags';
+export * from './FeatureFlagsStore';
 
 export * from './types';

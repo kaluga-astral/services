@@ -116,53 +116,57 @@ export const StringFeatureFlags: StringFeatureFlagsMap<
 4. Создать фасад для взаимодействия с сервисом, где при инициализации передать коллбэк для обновления данных о состоянии флагов
 
 ```typescript
-export class FeatureFlagsStore {
+export class FeatureToggleStore {
   constructor(
-    private readonly flagsService: FeatureFlagsService<
+    private readonly flagsStore: FeatureFlagsStore<
       FeatureFlagsRepositoryDTO.KeyProductionReady,
       FeatureFlagsRepositoryDTO.KeyForExperiment,
       FeatureFlagsRepositoryDTO.EventType
     >,
+    private readonly router: Router
   ) {
     makeAutoObservable(this);
   }
 
   public init = () => {
-    this.flagsService.init(navigationRouter.onNavigate);
+    this.flagsStore.init(this.router.onNavigate);
   };
 
   public get productionReady() {
-    return this.flagsService.productionReady;
+    return this.flagsStore.productionReady;
   }
 
   public get experiments() {
-    return this.flagsService.experiments;
+    return this.flagsStore.experiments;
   }
 }
 
-export const featureFlagsStore = new FeatureFlagsStore(
-  createFeatureFlagsService(
-    {
-      booleanFeatureFlags: BooleanFeatureFlags,
-      stringFeatureFlags: StringFeatureFlags,
-      defaultStringValue: DEFAULT_STRING_VALUE,
-    },
-    featureFlagsRepository,
-  ),
+const featureFlagsStore = createFeatureFlagsStore(
+  {
+    booleanFeatureFlags: BooleanFeatureFlags,
+    stringFeatureFlags: StringFeatureFlags,
+    defaultStringValue: DEFAULT_STRING_VALUE,
+  },
+  featureFlagsRepository,
+);
+
+export const featureToggleStore = new FeatureToggleStore(
+  featureFlagsStore,
+  routerService
 );
 ```
 
-5. Инициализировать featureFlagsStore
+5. Инициализировать featureToggleStore
 
 ```typescript
-featureFlagsStore.init();
+featureToggleStore.init();
 ```
 
 6. Применить во View-компоненте
 
 ```tsx
-export const Main = () => {
-  const featureProductionReady = featureFlagsStore.productionReady;
+export const Main = observer(() => {
+  const featureProductionReady = featureToggleStore.productionReady;
 
   return (
     <Main>
@@ -171,12 +175,12 @@ export const Main = () => {
         )}
     </Main>
   );
-};
+});
 ```
 
 ```tsx
-export const Main = () => {
-  const { flags, track } = featureFlagsStore.experiments;
+export const Main = observer(() => {
+  const { flags, track } = featureToggleStore.experiments;
   const handleClick = () => {
     track('FeatureExperimentEvent');
   };
@@ -188,6 +192,14 @@ export const Main = () => {
       <VariantOne onClick={handleClick} />
     )}
   );
-};
+});
 ```
+
+### Как работает
+
+При первой загрузке приложения сразу происходит получение данных о состоянии флагов из двух запросов.
+
+При каждом переходе на новую страницу происходит перезапрос и данные о состоянии флагов обновляются сразу, не дожидаясь монтирования компонента, в котором требуется флаг. Поэтому при инициализации необходимо передать коллбэк, который срабатывает при смене URL.
+
+При медленной сети запрос может длиться долго, и данные могут прийти после того, как смонтировался компонент. Поэтому флаги обладают реактивным свойством и могут обновить состояние компонента после монтирования.
 

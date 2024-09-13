@@ -8,13 +8,14 @@ import type {
   TriggerRefreshData,
 } from './types';
 
-export class FeatureFlags<
+export class FeatureFlagsStore<
   TKeyProductionReady extends string,
   TKeyForExperiment extends string,
   TEventType,
 > {
+  // Статический метод не может ссылаться на параметры типа класса
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private static instance: FeatureFlags<any, any, any> | null = null;
+  private static instance: FeatureFlagsStore<any, any, any> | null = null;
 
   private cacheProductionReady: Record<TKeyProductionReady, boolean>;
 
@@ -181,14 +182,14 @@ export class FeatureFlags<
       TEventType
     >,
   ) {
-    if (!FeatureFlags.instance) {
-      FeatureFlags.instance = new FeatureFlags(
+    if (!FeatureFlagsStore.instance) {
+      FeatureFlagsStore.instance = new FeatureFlagsStore(
         featureFlagsConfig,
         featureFlagsSources,
       );
     }
 
-    return FeatureFlags.instance as FeatureFlags<
+    return FeatureFlagsStore.instance as FeatureFlagsStore<
       TKeyProductionReady,
       TKeyForExperiment,
       TEventType
@@ -196,7 +197,7 @@ export class FeatureFlags<
   }
 }
 
-export const createFeatureFlags = <
+export const createFeatureFlagsStore = <
   TKeyProductionReady extends string,
   TKeyForExperiment extends string,
   TEventType,
@@ -212,7 +213,8 @@ export const createFeatureFlags = <
     TEventType
   >,
 ) =>
-  FeatureFlags.getInstance<TKeyProductionReady, TKeyForExperiment, TEventType>(
-    featureFlagsConfig,
-    featureFlagsSources,
-  );
+  FeatureFlagsStore.getInstance<
+    TKeyProductionReady,
+    TKeyForExperiment,
+    TEventType
+  >(featureFlagsConfig, featureFlagsSources);

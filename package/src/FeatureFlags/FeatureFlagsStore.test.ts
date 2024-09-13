@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { FeatureFlags } from './FeatureFlags';
+import { FeatureFlagsStore } from './FeatureFlagsStore';
 
 describe('FeatureFlags', () => {
   const config = {
@@ -54,7 +54,7 @@ describe('FeatureFlags', () => {
     it('Значение флага соответствует значению из источника данных', () => {
       const configMock = createConfigMock();
       const sourcesMock = createSourcesMock();
-      const sut = new FeatureFlags(configMock, sourcesMock);
+      const sut = new FeatureFlagsStore(configMock, sourcesMock);
 
       expect(sut.productionReady.featureA).toBeFalsy();
     });
@@ -66,7 +66,7 @@ describe('FeatureFlags', () => {
       };
       const sourcesMock = createSourcesMock();
 
-      const sut = new FeatureFlags(configMock, sourcesMock);
+      const sut = new FeatureFlagsStore(configMock, sourcesMock);
 
       const flags = sut.productionReady;
 
@@ -78,7 +78,7 @@ describe('FeatureFlags', () => {
     it('Значение флага соответствует значению из источника данных', () => {
       const configMock = createConfigMock();
       const sourcesMock = createSourcesMock();
-      const sut = new FeatureFlags(configMock, sourcesMock);
+      const sut = new FeatureFlagsStore(configMock, sourcesMock);
 
       expect(sut.experiments.flags?.experimentA).toBe('variantA');
     });
@@ -86,7 +86,7 @@ describe('FeatureFlags', () => {
     it('Целевое событие отправляется', () => {
       const configMock = createConfigMock();
       const sourcesMock = createSourcesMock();
-      const service = new FeatureFlags(configMock, sourcesMock);
+      const service = new FeatureFlagsStore(configMock, sourcesMock);
 
       service.experiments.track('conversionEventA');
       expect(sourcesMock.track).toHaveBeenCalledWith('conversionEventA');
@@ -100,7 +100,7 @@ describe('FeatureFlags', () => {
       const sourcesMock = createSourcesMock();
       const consoleWarnSpy = vi.spyOn(console, 'warn');
 
-      const sut = new FeatureFlags(configMock, sourcesMock);
+      const sut = new FeatureFlagsStore(configMock, sourcesMock);
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const flags = sut.experiments;
@@ -113,7 +113,7 @@ describe('FeatureFlags', () => {
     it('Значение флага заменяется на дефолтное, если из источника данных пришло неизвестное значение', () => {
       const configMock = createConfigMock();
       const sourcesMock = createSourcesMock();
-      const sut = new FeatureFlags(configMock, sourcesMock);
+      const sut = new FeatureFlagsStore(configMock, sourcesMock);
 
       expect(sut.experiments.flags?.experimentB).toBe(
         config.stringFeatureFlags.experimentB.defaultValue,

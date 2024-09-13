@@ -1,5 +1,6 @@
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type FeatureFlagsResponse<TOutput = any> = {
+export type FeatureFlagsResponse<
+  TOutput = { value: Record<string, string | boolean> },
+> = {
   data: TOutput;
 };
 
