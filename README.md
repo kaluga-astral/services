@@ -115,7 +115,7 @@ export const StringFeatureFlags: StringFeatureFlagsMap<
 };
 ```
 
-3. Создать репозитрий с методами getBooleanFlagList и getStringFlagList, которые получают из remote источника состояния флагов
+3. Создать репозиторий с методами getBooleanFlagList и getStringFlagList, которые получают из remote источника состояния флагов
 
 4. Создать фасад для взаимодействия с сервисом, где при инициализации передать коллбэк для обновления данных о состоянии флагов
 
