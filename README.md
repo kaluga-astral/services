@@ -61,3 +61,145 @@ export const createUIStore = () => new UIStore(userAgentDetectorInstance);
 - `Unknown` = 'Unknown',
 
 ----
+
+## FeatureFlags
+
+FeatureFlags — сервис, позволяет включать или выключать определенные части функциональности приложения
+
+Может применяться в 2-х случаях:
+- для сокрытия функциональности, находящейся на ранних стадиях разработки (Boolean)
+- для A/B/n тестирования (String)
+
+### Использование
+
+1. Создать модуль featureFlags
+├── index.ts             
+└── domain/                   
+    ├── constants.ts             # Конфиги флагов
+    └── stores/           
+        ├── FeatureFlagsStore.ts # Фасад для взаимодействия с сервисом
+        └── index.ts
+
+2. Зарегистрировать флаги
+Для A/B/n тестирования (StringFeatureFlags) обязательно наличие целевого события для вычисления конверсии
+Записываем дефолтные значения для флагов In-memory на случай, если источник флагов не отвечает
+
+```typescript
+export const DEFAULT_STRING_VALUE = 'NA' as const;
+
+export const BooleanFeatureFlags: BooleanFeatureFlagsMap<FeatureFlagsRepositoryDTO.KeyProductionReady> =
+  {
+    NewFeature: {
+      flagKey: 'NewFeature',
+      defaultValue: false,
+    },
+  };
+
+export const StringFeatureFlags: StringFeatureFlagsMap<
+  FeatureFlagsRepositoryDTO.KeyForExperiment,
+  FeatureFlagsRepositoryDTO.EventType
+> = {
+  FeatureExperiment: {
+    flagKey: 'FeatureExperiment',
+    defaultValue: 'one',
+    variants: {
+      one: 'one',
+      two: 'two',
+    },
+    eventType: 'FeatureExperimentEvent',
+  },
+};
+```
+
+3. Создать репозитрий с методами getBooleanFlagList и getStringFlagList, которые получают из remote источника состояния флагов
+
+4. Создать фасад для взаимодействия с сервисом, где при инициализации передать коллбэк для обновления данных о состоянии флагов
+
+```typescript
+export class FeatureToggleStore {
+  constructor(
+    private readonly flagsStore: FeatureFlagsStore<
+      FeatureFlagsRepositoryDTO.KeyProductionReady,
+      FeatureFlagsRepositoryDTO.KeyForExperiment,
+      FeatureFlagsRepositoryDTO.EventType
+    >,
+    private readonly router: Router
+  ) {
+    makeAutoObservable(this);
+  }
+
+  public init = () => {
+    this.flagsStore.init(this.router.onNavigate);
+  };
+
+  public get productionReady() {
+    return this.flagsStore.productionReady;
+  }
+
+  public get experiments() {
+    return this.flagsStore.experiments;
+  }
+}
+
+const featureFlagsStore = createFeatureFlagsStore(
+  {
+    booleanFeatureFlags: BooleanFeatureFlags,
+    stringFeatureFlags: StringFeatureFlags,
+    defaultStringValue: DEFAULT_STRING_VALUE,
+  },
+  featureFlagsRepository,
+);
+
+export const featureToggleStore = new FeatureToggleStore(
+  featureFlagsStore,
+  routerService
+);
+```
+
+5. Инициализировать featureToggleStore
+
+```typescript
+featureToggleStore.init();
+```
+
+6. Применить во View-компоненте
+
+```tsx
+export const Main = observer(() => {
+  const featureProductionReady = featureToggleStore.productionReady;
+
+  return (
+    <Main>
+        {featureProductionReady.NewFeature && (
+          <FeatureInDevelop />
+        )}
+    </Main>
+  );
+});
+```
+
+```tsx
+export const Main = observer(() => {
+  const { flags, track } = featureToggleStore.experiments;
+  const handleClick = () => {
+    track('FeatureExperimentEvent');
+  };
+
+  return (
+    {flags?.FeatureExperiment === 'two' ? (
+      <VariantTwo onClick={handleClick} />
+    ) : (
+      <VariantOne onClick={handleClick} />
+    )}
+  );
+});
+```
+
+### Как работает
+
+При первой загрузке приложения сразу происходит получение данных о состоянии флагов из двух запросов.
+
+При каждом переходе на новую страницу происходит перезапрос и данные о состоянии флагов обновляются сразу, не дожидаясь монтирования компонента, в котором требуется флаг. Поэтому при инициализации необходимо передать коллбэк, который срабатывает при смене URL.
+
+При медленной сети запрос может длиться долго, и данные могут прийти после того, как смонтировался компонент. Поэтому флаги обладают реактивным свойством и могут обновить состояние компонента после монтирования.
+

@@ -1,0 +1,8 @@
+{
+  "eslint.workingDirectories": [
+    "package"
+  ],
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  }
+}
